@@ -11,6 +11,97 @@ This makes it possible to put development, performance, and testing scaffolding
 into a source file. The scaffolding is removed by minification, but is activated
 by JSDev.
 
+JSDev is perhaps best understood through example. In each of the following, 
+assume we have a file called test.js.
+
+Example 1: 
+
+    Input:
+    
+        /*myname
+            console.log('what what');
+        */
+    
+    Compiled with:
+    
+        jsdev < test.js myname
+    
+    Outputs:
+    
+        { console.log('what what'); }
+
+
+Example 2:
+
+    Input:
+    
+        /*myname
+
+            var numIsNaN = function(v){
+                if(typeof v !== 'number' || isNaN(v)){
+                    throw new TypeError('NaN: ' + v);
+                }
+                return v;
+            }; 
+        */
+
+        function Vector(x, y){
+            /*vecNaN x*/
+            /*vecNaN y*/
+
+            this.x = x;
+            this.y = y;
+        }
+    
+    Compiled with:
+    
+        jsdev < test.js myname vecNaN:numIsNaN
+    
+    Outputs:
+        
+        { var numIsNaN = function(v){
+            if(typeof v !== 'number' || isNaN(v)){
+                throw new TypeError('NaN: ' + v);
+            }
+            return v;
+        };} 
+
+        function Vector(x, y){
+            {numIsNaN(x);}
+            {numIsNaN(y);}
+
+            this.x = x;
+            this.y = y;
+        }
+
+
+Example 3:
+
+    Input:
+
+        function Vector(x, y){
+            /*nonZero(x === 0) 'x was zero'*/
+            /*nonZero(y === 0) 'y was zero'*/
+
+            this.x = x;
+            this.y = y;
+        }
+
+    Compiled with:
+    
+        jsdev < test.js myname nonZero:alert
+    
+    Outputs:
+
+        function Vector(x, y){
+            {if(x === 0) alert('x was zero');}
+            {if(y === 0) alert('y was zero');}
+
+            this.x = x;
+            this.y = y;
+        }
+
+
 JSDev is a filter that takes a source file and looks for tagged comments in
 either of these forms:
 
